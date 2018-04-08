@@ -1,0 +1,77 @@
+\documentclass[spanish, a4paper, 12pt, final, slideColor, nototal, colorBG, pdf, noaccumulate, darkblue] {beamer}
+\usepackage[spanish]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsfonts}
+\usepackage{latexsym}
+\usepackage{mathtools}
+\usepackage{anysize}
+%\marginsize{2cm}{2cm}{2cm}{3cm}
+\usepackage{soul}
+\usepackage{mathtools}
+\DeclarePairedDelimiter{\ceil}{\lceil}{\rceil}
+\newcommand\eqdef{\stackrel{\mathclap{\mbox{\tiny{def}}}}{=}}
+\newcommand\eqac{\stackrel{\mathclap{\mbox{*}}}{=}}
+
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{float}
+\usepackage{verbatim}
+\usepackage{caption}
+\captionsetup{font=scriptsize,labelfont=scriptsize}
+\DeclareGraphicsExtensions{.pdf,.png,.jpg}
+
+\usetheme{Madrid}
+
+\title{CABS}
+\subtitle{A C-like language}
+\author{Marco Antonio Garrido Rojo\thanks{\url{https://github.com/MaSteve/CABS-Slides}}}
+\date{\today}
+
+\begin{document}
+\maketitle
+\begin{frame}
+  \frametitle{Introducción}
+  \begin{itemize}
+    \item Con el avance de los ordenadores durante las últimas décadas del siglo pasado surgió el desarrollo de programas concurrentes que aprovecharan mejor los recursos.
+    \item Hoy en día es común el uso de esta práctica en la mayoría de aplicaciones y programas.
+    \item La ejecución paralela conlleva riesgos adicionales como deadlocks o condiciones de carrera no presentes en los programas secuenciales.
+  \end{itemize}
+\end{frame}
+\begin{frame}
+  \frametitle{Introducción}
+  \begin{itemize}
+    \item Cada vez es más necesario el uso de técnicas de validación como el testing.
+    \item En esta línea es necesario detectar la redundancias de las distintas trazas de ejecución de un programa para crear tests más efectivos.
+  \end{itemize}
+\end{frame}
+\begin{frame}
+  \frametitle{ABS, SYCO y aPET}
+  \begin{itemize}
+    \item ABS es un lenguaje de modelado, orientado a objetos y concurrente que usa un modelo de paso de mensajes entre actores.
+    \item Emplea llamadas asíncronas a objetos aislados unos de otros en términos de memoria.
+    \item Cada objeto es capaz de gestionar un mensaje a la vez (e.g. reducción de la explosión de estados).
+    \item Es posible usarlo con herramientas especializadas como SYCO y aPET para analizar implementaciones y generar tests para ellas.
+  \end{itemize}
+\end{frame}
+\begin{frame}
+  \frametitle{ABS y sus inconvenientes}
+  \begin{itemize}
+    \item Sintaxis compleja: interfaces y clases que las implementan, llamadas asíncronas\dots
+    \item Boilerplate
+    \item Alejado de las implementaciones reales (e.g. modelado e implementación separados).
+  \end{itemize}
+\end{frame}
+\begin{frame}
+  \frametitle{¿Qué es CABS?}
+  La idea principal es tener un lenguaje de programación sencillo que
+  \begin{itemize}
+    \item Tenga una sintaxis similar a C.
+    \item Permita ejecuciones concurrentes de grano fino de forma simple (mismo comportamiento que pthread).
+    \item Tenga un tipado estricto y estático.
+    \item Paradigma imperativo con funciones y arrays.
+    \item Que pueda usar las mismas herramientas que ABS.
+  \end{itemize}
+\end{frame}
+\end{document}
