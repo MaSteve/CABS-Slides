@@ -312,7 +312,7 @@
 \end{frame}
 
 \begin{frame}[fragile]
-  \frametitle{CABS: semántica del if}
+  \frametitle{CABS: semántica del thread}
   \fontsize{8}{7.2}\selectfont
 \begin{prooftree*}
     \Infer[left label=$\enac$]0{(\G, \F, \RP \leadsto (s, \varepsilon))) \stns (\G, \F, \RP))}
@@ -334,5 +334,88 @@
 \end{prooftree*}
 \end{frame}
 
+\begin{frame}[fragile]
+  \frametitle{CABS: ejemplo}
+  \lstinputlisting{code.0.3.txt}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{CABS: ejemplo}
+  \fontsize{8}{7.2}\selectfont
+  Excluyendo algunos pasos:
+\begin{multline*}
+  (\G, \F, (\nil, \thread \,f(1)\;\thread \,f(2)\;)) \stns \\
+  (\G, \F, (\nil\ass{value}{1}, var = value\;):(\nil, \thread \,f(2)\;)) \stns \\
+  (\G, \F, (\nil\ass{value}{1}, var = value\;):(\nil\ass{value}{2}, var = value\;):(\nil, \varepsilon)) \stns \\
+  (\G\ass{var}{1}, \F, (\nil\ass{value}{1}, \varepsilon):(\nil\ass{value}{2}, var = value\;):(\nil, \varepsilon)) \stns \\
+  (\G\ass{var}{2}, \F, (\nil\ass{value}{1}, \varepsilon):(\nil\ass{value}{2}, \varepsilon):(\nil, \varepsilon)) \stns \\
+  (\G\ass{var}{2}, \F, [])
+\end{multline*}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{ABS: sintaxis}
+  \begin{itemize}
+  \item Sintaxis parecida a la de Java (aproximadamente).
+  \item Clases que implementan interfaces para exponer los métodos públicos.
+  \item Tipos futuro para esperar resultados del paso de mensajes (await).
+  \end{itemize}
+  \fontsize{7}{7.2}\selectfont
+  \lstinputlisting{code.1.1.txt}
+  \lstinputlisting{code.1.2.txt}
+  \lstinputlisting{code.1.3.txt}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{ABS: semántica}
+ \begin{itemize}
+  \item Estado: $(\O, \Cl)$.
+  \item Definición de las clases: $\Cl\eval{c} = (\mbox{Inter}, attr_c, met, args_c)$.
+  \item Lista de objetos instanciados (actores): $\O \leadsto (id, c, \RT \leadsto (loc, S, t), t, \attr)$
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{ABS: algunas reglas semánticas}
+  \fontsize{5}{7.2}\selectfont
+  \begin{prooftree*}
+      \hypo {is\_local(x)}
+      \hypo {is\_Int(x)}
+    \Infer[left label=$\assa$]2{(\O \leadsto (id, c, \RT \leadsto (loc, x = a\; S, t), t, \attr), \Cl) \stns (\O \leadsto (id, c, \RT \leadsto (loc \ass{x}{\A \eval{a}_{loc, \attr}}, S, t), t, \attr), \Cl)}
+  \end{prooftree*}
+
+  \fontsize{4}{7.2}\selectfont
+   \begin{prooftree*}
+      \hypo{\Cl\eval{c'} = (\mbox{Inter}, attr_c, met, args_c)}
+      \hypo{check\_args(args_c, args)}
+    \Infer[left label=$\oabs$]2{(\O \leadsto (id, c, \RT \leadsto (loc,  \mbox{Inter } inter = new\, c'(args)\; S, t), t, \attr), \Cl) \stns (\O:o \leadsto (id, c, \RT \leadsto (loc \ass{inter}{id'}, S, t), t, \attr), \Cl)}
+   \end{prooftree*}
+\fontsize{7}{7.2}\selectfont
+   donde $o = (id', c', [], \perp, \attr')$ con $id'$ un nuevo identificador de objeto no utilizado y $\attr' = attr_c \ass{args_c}{\E\eval{args}_{loc, \attr}}$ los atributos del nuevo objeto creado.
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{ABS: algunas reglas semánticas}
+  \fontsize{5}{7.2}\selectfont
+\begin{prooftree*}
+      \hypo{loc \cup attr \eval{int} = id'}
+      \hypo{\Cl\eval{c'} = (\mbox{Inter}, attr_c, met, args_c)}
+      \hypo{contains(met, m)}
+      \hypo{check\_args(args_m, args)}
+    \Infer[left label=$\tskabsb$]4{(\O \leadsto  (id', c', \RT', t', \attr') (id, c, \RT \leadsto (loc, Int\,x = await\,int!m(args)\; S, t), t, \attr), \Cl) \stns st}
+\end{prooftree*}
+ \fontsize{7}{7.2}\selectfont
+ donde $o' = (id', c', \RT':tsk, t', \attr')$, $tsk = (loc', S', t'')$ con $t''$ un identificador de tarea nuevo y $loc' = \nil\ass{args_m}{args}$, $met\eval{m} = (S', args_m)$ y $st = (\O \leadsto o' (id, c, \RT \leadsto (loc, Int\,x = await\,t'\; S, t), t, \attr), \Cl)$
+
+ \begin{prooftree*}
+      \hypo{tsk = (loc', \varepsilon(\nu), t'')}
+    \Infer[left label=$\retabs$]1{(\O \leadsto  (id', c', \RT' \leadsto tsk, t', \attr') (id, c, \RT \leadsto (loc, Int\,x = await\,t'\; S, t), t, \attr), \Cl) \stns st}
+  \end{prooftree*} donde $o' = (id', c', \RT', t', \attr')$ y $st = (\O \leadsto o' (id, c, \RT \leadsto (loc\ass{x}{\nu}, S, t), t, \attr), \Cl)$
+
+ \fontsize{6}{7.2}\selectfont
+ \begin{prooftree*}
+    \Infer[left label=$\eabs$]0{(\O \leadsto (id, c, \RT \leadsto (loc, \return a\;S, t), t, \attr), \Cl) \stns (\O \leadsto (id, c, \RT \leadsto (loc, \varepsilon(\A \eval{a}_{loc, \attr}), t), \perp, \attr), \Cl)}
+  \end{prooftree*}
+\end{frame}
 
 \end{document}
