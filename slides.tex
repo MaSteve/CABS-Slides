@@ -522,4 +522,14 @@
   \end{figure}
 \end{frame}
 
+\begin{frame}[fragile]
+  \frametitle{Corrección}
+  \begin{itemize}
+  \item Se trata de ver que existe una equivalencia semántica entre el programa en CABS y su traducción a ABS.
+  \item Ambas semánticas son de paso corto luego la idea propuesta pasa por hacer una bisimulación en ambas semánticas.
+  \item Partiendo de dos estados equivalentes, uno de CABS y otro de ABS, hay que ver que un paso en una de las semánticas se corresponde con un paso en la otra semántica (obviando transiciones que no afectan al significado).
+  \item Dándose esto para un paso, por inducción en la longitud de la secuancia de derivación, tenemos que se cumple para ejecuciones arbitrariamente largas.
+  \end{itemize}
+\end{frame}
+
 \end{document}
