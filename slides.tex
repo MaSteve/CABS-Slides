@@ -418,4 +418,108 @@
   \end{prooftree*}
 \end{frame}
 
+\begin{frame}[fragile]
+  \frametitle{ABS: ejemplo}
+  \fontsize{5}{7.2}\selectfont
+   \begin{multicols}{2}
+     \lstinputlisting{code.1.6.txt}
+   \end{multicols}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Traducción}
+  \begin{itemize}
+  \item Necesitamos crear de forma artificial un ámbito global de variables (memoria compartida ausente en ABS).
+  \item La traducción de las funciones y procedimientos tienen que ser visibles desde cualquier punto del programa (¿métodos públicos de interfaz o métodos privados de una única clase?).
+  \item La concurrencia tiene que ser de grano fino (ABS implementa el modelo de actores).
+  \item Hay que dar un soporte a los arrays en ámbito local y global (ABS tiene un tipo de lista enlazada).
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Traducción: ámbito global de variables y funciones}
+  \fontsize{5}{7.2}\selectfont
+  \begin{multicols}{2}
+    \lstinputlisting{example.txt}
+    \vfill
+    \fontsize{10}{7.2}\selectfont
+    Así solo es posible un interleaving.\\
+    \vfill
+    Tal vez usando:
+    \fontsize{5}{7.2}\selectfont
+    \begin{lstlisting}
+    this!f();
+    suspend;
+    \end{lstlisting}
+    \vfill\null
+    \columnbreak
+    \lstinputlisting{code.2.1.txt}
+  \end{multicols}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Traducción: ámbito global de variables y funciones}
+  Tampoco funciona la idea del \emph{suspend}
+  {\fontsize{6}{7.2}\selectfont
+    \lstinputlisting{code.2.2.txt}}
+  Concluimos que cada función tiene que ir en un objeto distinto.
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Traducción: ámbito global de variables y funciones}
+  ¿Qué hacemos ahora con las variables globales? Ya no pueden ser atributos de una clase que implemente una función. Necesita su propio objeto.
+  \begin{multicols}{2}
+  {\fontsize{6}{7.2}\selectfont
+    \lstinputlisting[firstline=1,lastline=30]{code.2.3.txt}}
+  \end{multicols}
+  Usaremos llamadas asíncronas para manejar este objeto:
+  \fontsize{6}{7.2}\selectfont
+  \begin{lstlisting}
+  globalval!setvar(1);
+  Int x = await globalval!getvar();
+  \end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Traducción: arrays locales y globales}
+  El mismo argumento que hemos empleado para las variables globales (preservación de los interleavings) se puede aplicar a los arrays encapsulando una lista de ABS en una clase.
+  \begin{multicols}{2}
+  {\fontsize{6}{7.2}\selectfont
+    \lstinputlisting{code.2.4.txt}}
+  \end{multicols}
+  Para el ámbito global hay que añadir algunos métodos extra (\emph{retrievearray}, \emph{init} \dots).
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Traducción: función de traducción $\AExp$}
+  \begin{figure}[h]
+    \centering
+    \includegraphics[scale=0.7]{trada.png}
+  \end{figure}
+  \begin{figure}[h]
+    \centering
+    \includegraphics[scale=0.7]{tradf.png}
+  \end{figure}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Traducción: función de traducción del if y del while}
+  \begin{figure}[h]
+    \centering
+    \includegraphics[scale=0.7]{tradc.png}
+  \end{figure}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Traducción: función de traducción de una función y del thread}
+  \begin{figure}[h]
+    \centering
+    \includegraphics[scale=0.7]{tradfd.png}
+  \end{figure}
+  \begin{figure}[h]
+    \centering
+    \includegraphics[scale=0.7]{tradth.png}
+  \end{figure}
+\end{frame}
+
 \end{document}
