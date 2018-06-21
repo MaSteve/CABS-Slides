@@ -41,7 +41,8 @@
   \begin{itemize}
   \item En un principio, la mayoría de sistemas solo podían ejecutar una única secuencia de instrucciones a la vez.
   \item Con el avance de los ordenadores durante las últimas décadas del siglo pasado, se permite la ejecución simultánea de varios hilos de ejecución.
-  \item Hoy en día es común el uso de la programación concurrente en la mayoría de aplicaciones y programas de todo ámbito.
+  \item Objetivo: obtener un mejor rendimiento.
+  \item Hoy en día es común el uso de la programación concurrente en la mayoría de aplicaciones y programas de todo ámbito, en especial, el relacionado con el cloud computing.
   \end{itemize}
 \end{frame}
 
@@ -50,7 +51,7 @@
   \begin{itemize}
   \item La ejecución paralela conlleva riesgos adicionales no presentes en los programas secuenciales.
   \item El principal problema que presenta es la presencia de una memoria compartida sobre la que los distintos hilos realizan modificaciones en cualquier momento.
-  \item Asociado a esto, pueden ocurrir deadlocks, carreras de datos o comportamientos impredecibles.
+  \item Asociado a esto, pueden ocurrir deadlocks, carreras de datos o comportamientos impredecibles, además de los problemas de sincronización.
   \end{itemize}
 \end{frame}
 
@@ -63,17 +64,9 @@
 \end{frame}
 
 \begin{frame}
-  \frametitle{Introducción: soluciones}
-  \begin{figure}[h]
-    \centering
-    \includegraphics[scale=0.5]{tie-breaker.png}
-    \caption{Algoritmo tie-breaker para dos procesos. (Andrews')}
-  \end{figure}
-\end{frame}
-
-\begin{frame}
   \frametitle{Introducción: interleavings}
   \begin{itemize}
+    \item La existencia de los interleavings puede dar lugar a distintos resultados con el mismo programa.
     \item En este terreno se sigue investigando para encontrar un modo definitivo que permita solucionar los problemas o detectarlos.
     \item Uno de los primeros asuntos estudiados es determinar el estado o estados finales a los que se llega ejecutando un programa concurrente.
   \end{itemize}
@@ -100,6 +93,8 @@
   \item Explosión exponencial en el número de interleavings en proporción al número de hilos y al número de instrucciones.
   \item No siempre hay una correlación con el número de estados finales.
   \item No todos los interleavings tienen la misma importancia y algunos de ellos son equivalentes entre sí.
+  \item En este ámbito, se intentan llevar a cabo razonamientos formales de análisis, verificación y testing.
+  \item DPOR (Dynamic partial order reduction): una de las técnicas de más éxito para hacer verificación y testing que permite detectar interleavings redundantes.
   \end{itemize}
 \end{frame}
 
@@ -130,7 +125,7 @@
     \item ¿Lectura de valores?: grano fino.
     \item ¡Secciones de código enteras!: \dots
     \end{itemize}
-  \item ¿De qué depende el grano? ¿Qué ocurre si no hay memoria compartida?
+  \item ¿Qué ocurre si no hay memoria compartida?
   \end{itemize}
 \end{frame}
 
@@ -149,15 +144,17 @@
   \frametitle{Introducción: ventajas}
   \begin{itemize}
   \item Reducción notable del número de interleavings: importante cuando se aplican técnicas de testing sistemático.
-  \item Presente en lenguajes como Erlang, Scala y \textbf{ABS}.
-  \item Cuenta con una amplia cantidad de herramientas, entre ellas, \textbf{SYCO}, que implementa \textbf{DPOR} para obtener los posibles resultados finales de un programa, reduciendo los interleavings redundantes.
+  \item Presente en lenguajes como Erlang, Scala y ABS.
+  \item En concreto, ABS cuenta con una amplia cantidad de herramientas, entre ellas, SYCO, que implementa DPOR para obtener los posibles resultados finales de un programa.
   \end{itemize}
 \end{frame}
 
 \begin{frame}
   \frametitle{Introducción: objetivo}
   \begin{itemize}
-  \item Acercar las herramientas de ABS a un lenguaje que no sea de modelado, como C.
+  \item Tenemos que los lenguajes más importantes tienen una concurrencia de grano fino y que, por otro lado, el uso de otro tipo de concurrencias ayuda en los razonamientos formales.
+  \item ¿Sería posible pasar de un modelo de concurrencia a otro preservando el mismo comportamiento? Eso pretende este trabajo.
+  \item Acercar las herramientas de ABS a un lenguaje que no sea de modelado, como C, aportando una implementación de una traducción y una demostración formal.
   \item Un lenguaje que permita recrear una concurrencia entre procesos a nivel de grano fino.
   \item Un lenguaje sencillo pero completo: \textbf{CABS}.
   \end{itemize}
@@ -174,9 +171,10 @@
 
 \begin{frame}[fragile]
   \frametitle{CABS: sintaxis}
-  \begin{multicols}{2}
+  %\begin{multicols}{1}
+    \fontsize{7}{7.2}\selectfont
     \lstinputlisting{code.0.2.txt}
-  \end{multicols}
+  %\end{multicols}
 \end{frame}
 
 \begin{frame}[fragile]
@@ -188,7 +186,7 @@
   \frametitle{CABS: semántica}
   \begin{itemize}
   \item Estado: $(\G, \F, \RP)$.
-  \item Ámbito global de varibles ($\G$): asocia nombres de variables a valores de $\V$.
+  \item Ámbito global de variables ($\G$): asocia nombres de variables a valores de $\V$.
   \item Definición de funciones: $\F(\func) = (t, S_F, args_F, a_{ret})$.
   \item Lista de marcos de ejecución: $\RP \leadsto (local:s, S)$
   \end{itemize}
@@ -528,7 +526,7 @@
   \item Se trata de ver que existe una equivalencia semántica entre el programa en CABS y su traducción a ABS.
   \item Ambas semánticas son de paso corto luego la idea propuesta pasa por hacer una bisimulación en ambas semánticas.
   \item Partiendo de dos estados equivalentes, uno de CABS y otro de ABS, hay que ver que un paso en una de las semánticas se corresponde con un paso en la otra semántica (obviando transiciones que no afectan al significado).
-  \item Dándose esto para un paso, por inducción en la longitud de la secuancia de derivación, tenemos que se cumple para ejecuciones arbitrariamente largas.
+  \item Dándose esto para un paso, por inducción en la longitud de la secuencia de derivación, tenemos que se cumple para ejecuciones arbitrariamente largas.
   \end{itemize}
 \end{frame}
 
